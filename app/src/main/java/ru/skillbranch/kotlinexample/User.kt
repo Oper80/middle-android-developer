@@ -21,7 +21,7 @@ class User private constructor(
     private val initials: String
         get() = listOfNotNull(firstName, lastName)
             .map { it.first().toUpperCase() }
-            .joinToString { " " }
+            .joinToString (" ")
     private var phone: String? = null
         set(value) {
             field = value?.replace("[^+\\d]".toRegex(), "")
@@ -33,7 +33,7 @@ class User private constructor(
         get() = _login!!
 
         set(value) {
-            _login = value?.toLowerCase()
+            _login = value.toLowerCase()
         }
 
     private val salt: String by lazy {
