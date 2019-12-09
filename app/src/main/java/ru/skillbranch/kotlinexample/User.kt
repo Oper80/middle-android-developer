@@ -36,9 +36,7 @@ class User private constructor(
             _login = value.toLowerCase()
         }
 
-    private val salt: String by lazy {
-        ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
-    }
+    private var salt: String
 
     private lateinit var passwordHash: String
 
@@ -68,6 +66,18 @@ class User private constructor(
         sendAccessCodeToUser(rawPhone, code)
     }
 
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        newSalt: String,
+        hash: String,
+        phone: String?
+    ) : this(firstName, lastName, email = email, rawPhone = phone, meta = mapOf("src" to "csv")){
+        passwordHash = hash
+        salt = newSalt
+    }
+
 
     init {
         println("First init block, primary constructor was called")
@@ -76,7 +86,7 @@ class User private constructor(
 
         phone = rawPhone
         login = email ?: phone!!
-
+        salt = ByteArray(16).also { SecureRandom().nextBytes(it) }.toString()
         userInfo = """
             firstName: $firstName
             lastName: $lastName
@@ -132,10 +142,13 @@ class User private constructor(
             fullName: String,
             email: String? = null,
             password: String? = null,
-            phone: String? = null
+            phone: String? = null,
+            salt: String? = null,
+            hash: String? = null
         ):User{
             val (firstName, lastName) = fullName.fullNameToPair()
             return when{
+                salt != null && hash != null -> User(firstName, lastName, email, salt, hash, phone)
                 !phone.isNullOrBlank() -> User(firstName, lastName, phone)
                 !email.isNullOrBlank() && !password.isNullOrBlank() -> User(firstName, lastName, email, password)
                 else -> throw IllegalArgumentException("Email or phone must be not null or blank")

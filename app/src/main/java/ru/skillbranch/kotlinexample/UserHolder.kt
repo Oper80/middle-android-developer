@@ -38,6 +38,18 @@ object UserHolder {
         map[login.toPhone()]?.updateAccessCode()
     }
 
+    fun importUsers(list: List<String>): List<User>{
+        val userList = mutableListOf<User>()
+        for (item in list){
+            val itemList = item.split(";")
+            val (salt, hash) = itemList[2].split(":")
+            val user = User.makeUser(itemList[0].trim(), itemList[1], phone = itemList[3], salt = salt, hash = hash)
+            userList.add(user)
+            map[user.login] = user
+        }
+        return userList
+    }
+
     private fun validatePhone(rawPhone: String): Boolean {
         return rawPhone.toPhone().matches("^\\+[0-9]{11}$".toRegex())
     }
