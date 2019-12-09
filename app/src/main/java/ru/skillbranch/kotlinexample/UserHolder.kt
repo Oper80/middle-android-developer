@@ -43,7 +43,7 @@ object UserHolder {
         for (item in list){
             val itemList = item.split(";")
             val (salt, hash) = itemList[2].split(":")
-            val user = User.makeUser(itemList[0].trim(), itemList[1], phone = itemList[3], salt = salt, hash = hash)
+            val user = User.makeUser(itemList[0].trim(), itemList[1].trim(), phone = itemList[3], salt = salt, hash = hash)
             userList.add(user)
             map[user.login] = user
         }
